@@ -1,69 +1,83 @@
-# 1. Module-Level Variable (Global Scope)
-SERVERS = {
-    "Web_Alpha": "Online",
-    "DB_Storage": "Offline",
-    "Mail_Relay": "Online"
-}
+# text_analysis_reconstruction.py
+
+def load_file(input_file):
+    with open(input_file, "r", encoding="utf-8") as f:
+        text = f.read()
+    return text
 
 
-def display_menu():
-    print("\n>>> SYSADMIN MENU <<<")
-    print("1. View All Servers")
-    print("2. Change Server Status")
-    print("3. Add New Server")
-    print("4. Exit")
-    print("====================")
+def count_sentences(text):
+    sentence_count = 0
+    for ch in text:
+        if ch == "." or ch == "!" or ch == "?":
+            sentence_count += 1
+
+    if sentence_count == 0:
+        sentence_count = 1
+
+    return sentence_count
 
 
-def show_status():
-    print("\n--- CURRENT SERVER STATUS ---")
-    for server_name in SERVERS:
-        print(f"[{server_name}]: {SERVERS[server_name]}")
+def count_words(text):
+    words = text.split()
+    return len(words)
 
 
-def update_server(server_name, status="Online"):
-    if server_name in SERVERS:
-        SERVERS[server_name] = status
-        print(f"Task: Setting {server_name} to {status}...")
-    else:
-        print("Server not found.")
+def count_syllables_in_word(word):
+    word = word.lower()
+    vowels = "aeiouy"
+    syllables = 0
+    previous_vowel = False
+
+    for ch in word:
+        is_vowel = ch in vowels
+        if is_vowel and not previous_vowel:
+            syllables += 1
+        previous_vowel = is_vowel
+
+    if word.endswith("e") and syllables > 1:
+        syllables -= 1
+
+    if syllables == 0:
+        syllables = 1
+
+    return syllables
 
 
-def add_server():
-    new_name = input("Enter new server name: ")
+def count_syllables(text):
+    words = text.split()
+    total = 0
 
-    if new_name in SERVERS:
-        print("That server already exists.")
-    else:
-        initial_state = input("Enter initial state (Online/Offline): ")
-        SERVERS[new_name] = initial_state
-        print(f"Added {new_name} with state {initial_state}")
+    for w in words:
+        w = w.strip(".,!?;:()[]{}\"'")
+        if w != "":
+            total += count_syllables_in_word(w)
+
+    return total
+
+
+def calculate_flesch(word_count, sentence_count, syllable_count):
+    score = 206.835 - 1.015 * (word_count / sentence_count) - 84.6 * (syllable_count / word_count)
+    return score
 
 
 def main():
-    while True:
-        display_menu()
-        choice = input("Select an option (1-4): ")
+    input_file = input("Enter filename: ")
 
-        if choice == "1":
-            show_status()
+    text = load_file(input_file)
 
-        elif choice == "2":
-            server_name = input("Which server name? ")
-            new_status = input("Enter new status (Online/Offline): ")
-            update_server(server_name, new_status)
+    sentence_count = count_sentences(text)
+    word_count = count_words(text)
+    syllable_count = count_syllables(text)
 
-        elif choice == "3":
-            add_server()
+    flesch_score = calculate_flesch(word_count, sentence_count, syllable_count)
 
-        elif choice == "4":
-            print("Exiting System. Goodbye!")
-            break
-
-        else:
-            print("Invalid option. Please choose 1-4.")
+    print("\n--- TEXT ANALYSIS RESULTS ---")
+    print("Sentences:", sentence_count)
+    print("Words:", word_count)
+    print("Syllables:", syllable_count)
+    print("Flesch Score:", round(flesch_score, 2))
 
 
-# ALWAYS PUT THIS AT THE VERY BOTTOM
 if __name__ == "__main__":
     main()
