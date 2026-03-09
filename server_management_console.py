@@ -16,7 +16,7 @@ def display_menu():
 def show_status():
     print("\n--- CURRENT SERVER STATUS ---")
     for server_name in SERVERS:
-        print(f"{server_name} : {SERVERS[server_name]}")
+        print(f"[{server_name}]: {SERVERS[server_name]}")
 
 def update_server():
     server_name = input("Enter server name: ")
@@ -38,7 +38,16 @@ def add_server():
         SERVERS[server_name] = status
         print(f"Added {server_name} with state {status}")
 
-# Jump Table (must come after functions)
+# Function to execute commands using the jump table
+def runCommand(choice):
+    action = JUMP_TABLE.get(choice)
+
+    if action:
+        action()
+    else:
+        print("Invalid option. Try again.")
+
+# Jump Table (must be after the functions)
 JUMP_TABLE = {
     "1": show_status,
     "2": update_server,
@@ -54,12 +63,8 @@ def main():
             print("Exiting System. Goodbye!")
             break
 
-        action = JUMP_TABLE.get(choice)
+        runCommand(choice)
 
-        if action:
-            action()
-        else:
-            print("Invalid option. Try again.")
-
+# Entry point of the program
 if __name__ == "__main__":
     main()
