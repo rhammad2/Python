@@ -21,18 +21,21 @@ class TaxCalculator(EasyFrame):
         self.taxField = self.addFloatField(value = 0.0, row = 3, column = 1)
         self.taxField["state"] = "readonly"
 
-    def computeTax(self):
-        TAX_RATE = 0.20
-        STANDARD_DEDUCTION = 10000.0
-        DEPENDENT_DEDUCTION = 3000.0
+class TaxCalculator(EasyFrame):
 
+    TAX_RATE = 0.20
+    STANDARD_DEDUCTION = 10000.0
+    DEPENDENT_DEDUCTION = 3000.0
+
+    
+def computeTax(self):
         grossIncome = self.incomeField.getNumber()
         numDependents = self.dependField.getNumber()
 
-        taxableIncome = grossIncome - STANDARD_DEDUCTION - \
-                        DEPENDENT_DEDUCTION * numDependents
-        incomeTax = taxableIncome * TAX_RATE
+        taxableIncome = grossIncome - self.STANDARD_DEDUCTION - \
+                        self.DEPENDENT_DEDUCTION * numDependents
 
+        incomeTax = taxableIncome * self.TAX_RATE
         if incomeTax < 0:
             incomeTax = 0.0
 
