@@ -1,7 +1,10 @@
 from breezypythongui import EasyFrame
 
 class TaxCalculator(EasyFrame):
-    """Application window for the tax calculator."""
+
+    TAX_RATE = 0.20
+    STANDARD_DEDUCTION = 10000.0
+    DEPENDENT_DEDUCTION = 3000.0
 
     def __init__(self):
         EasyFrame.__init__(self, title = "Tax Calculator")
@@ -12,35 +15,29 @@ class TaxCalculator(EasyFrame):
         self.addLabel(text = "Dependents", row = 1, column = 0)
         self.dependField = self.addIntegerField(value = 0, row = 1, column = 1)
 
-        self.computeButton = self.addButton(text = "Compute",
-                                            row = 2, column = 0,
-                                            columnspan = 2,
-                                            command = self.computeTax)
+        self.addButton(text = "Compute",
+                       row = 2, column = 0,
+                       columnspan = 2,
+                       command = self.computeTax)
 
         self.addLabel(text = "Total tax", row = 3, column = 0)
         self.taxField = self.addFloatField(value = 0.0, row = 3, column = 1)
         self.taxField["state"] = "readonly"
 
-class TaxCalculator(EasyFrame):
-
-    TAX_RATE = 0.20
-    STANDARD_DEDUCTION = 10000.0
-    DEPENDENT_DEDUCTION = 3000.0
-
-    
-def computeTax(self):
+    def computeTax(self):
         grossIncome = self.incomeField.getNumber()
         numDependents = self.dependField.getNumber()
 
-        taxableIncome = grossIncome - self.STANDARD_DEDUCTION - \
-                        self.DEPENDENT_DEDUCTION * numDependents
+        taxableIncome = grossIncome - TaxCalculator.STANDARD_DEDUCTION - \
+                        TaxCalculator.DEPENDENT_DEDUCTION * numDependents
 
-        incomeTax = taxableIncome * self.TAX_RATE
+        incomeTax = taxableIncome * TaxCalculator.TAX_RATE
+
         if incomeTax < 0:
             incomeTax = 0.0
 
         self.taxField["state"] = "normal"
-        self.taxField.setNumber(incomeTax)
+        self.taxField.setNumber(round(incomeTax, 2))
         self.taxField["state"] = "readonly"
 
 def main():
